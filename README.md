@@ -18,3 +18,5 @@ Proje besleme gerilimleri;
 Mikrodenetleyici 3.3v ile beslenmektedir.
 LM35DZ 5V ile beslenmektedir
 
+
+
