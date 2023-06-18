@@ -16,11 +16,8 @@ void adc_init(void)
 {
    ADC10CTL0 &= ~ENC;
    ADC10CTL0 = ADC10SHT_3 + ADC10ON + ADC10IE ;
-   
    ADC10CTL1 = INCH_0 + ADC10SSEL_3 + ADC10DIV_3;
-  // ADC10CTL0 |= REFON; // Dahili referans gerilimi  kullan
-   //ADC10CTL0 |= REF2_5V; //  referans gerilimi olarak 2.5V kullan
-   ADC10AE0 = BIT0;
+  
 }
 
 void RGB_LED(unsigned char tR,unsigned char tG, unsigned char tB){
@@ -42,34 +39,19 @@ for(i=1;i<=255;i++){  // 255 adimda 3 ayri PWM isaret uret
 }}}
 
 void colour_table(void){
-if(Temperature<15){tR=255; tG=0;   tB=255;}
-if(Temperature>=15 && Temperature<16){tR=0; tG=0;   tB=255;} // pembe
-if(Temperature>=16 && Temperature<17){tR=0; tG=0;   tB=255;}
-if(Temperature>=17 && Temperature<18){tR=0; tG=0;   tB=255;}
-if(Temperature>=18 && Temperature<19){tR=0; tG=0;   tB=255;}
-if(Temperature>=19 && Temperature<20){tR=0;  tG=0;   tB=255;}
+if(Temperature<20){tR=0; tG=0;   tB=255;}
 if(Temperature>=20 && Temperature<21){tR=0;   tG=0;   tB=255;} // mavi
 if(Temperature>=21 && Temperature<22){tR=0;   tG=255;  tB=0;}
-if(Temperature>=22 && Temperature<23){tR=0;   tG=255; tB=0;}
+if(Temperature>=22 && Temperature<23){tR=0;   tG=255; tB=0;}  // yesil
 if(Temperature>=23 && Temperature<24){tR=0;   tG=255; tB=0;}
 if(Temperature>=24 && Temperature<25){tR=0;   tG=255; tB=0;}
-if(Temperature>=25 && Temperature<26){tR=0;   tG=255; tB=0;} // turkuaz
-if(Temperature>=26 && Temperature<27){tR=255;   tG=0; tB=0;}
+if(Temperature>=25 && Temperature<26){tR=0;   tG=255; tB=0;} 
+if(Temperature>=26 && Temperature<27){tR=255;   tG=0; tB=0;} // kirmizi
 if(Temperature>=27 && Temperature<28){tR=255;   tG=0; tB=0;}
 if(Temperature>=28 && Temperature<29){tR=255;   tG=0; tB=0;}
 if(Temperature>=29 && Temperature<30){tR=255;   tG=0; tB=0;}
-if(Temperature>=30 && Temperature<31){tR=255;   tG=0; tB=0;} // yesil
-if(Temperature>=31 && Temperature<32){tR=51;  tG=255; tB=0;}
-if(Temperature>=32 && Temperature<33){tR=102; tG=255; tB=0;}
-if(Temperature>=33 && Temperature<34){tR=153; tG=255; tB=0;}
-if(Temperature>=34 && Temperature<35){tR=204; tG=255; tB=0;}
-if(Temperature>=35 && Temperature<36){tR=255; tG=255; tB=0;} // sari
-if(Temperature>=36 && Temperature<37){tR=255; tG=204; tB=0;}
-if(Temperature>=37 && Temperature<38){tR=255; tG=153; tB=0;}
-if(Temperature>=38 && Temperature<39){tR=255; tG=102; tB=0;}
-if(Temperature>=39 && Temperature<40){tR=255; tG=51;  tB=0;}
-if(Temperature>=40 && Temperature<41){tR=255; tG=0;   tB=0;} // kirmizi
-if(Temperature>=41){tR=255; tG=0;   tB=0;}
+if(Temperature>=30 && Temperature<31){tR=255;   tG=0; tB=0;} 
+if(Temperature>30){tR=255; tG=0;   tB=0;}
 }
 
 
@@ -86,23 +68,15 @@ int main( void )
    P1DIR = 0x00;
    P2DIR = BIT3|BIT4|BIT5;
    P2OUT = 0x00;
- /*  P2SEL_bit.P6 = 0;
-   P2SEL_bit.P7 = 0;
-   P2DIR_bit.P6 = 1;
-   P2DIR_bit.P7 = 1;  */
  
+
    adc_init();
    ADC10CTL0 |= ADC10SC + ENC;
   
-  // colour_table();
-  //   RGB_LED( tR, tG, tB);
+  
    _BIS_SR(GIE);
    
-     // colour_table();
-   //  RGB_LED( tR, tG, tB);
-   
    for(;;);
-   
 }
 
 #pragma vector=ADC10_VECTOR
@@ -110,7 +84,7 @@ __interrupt void ADC_ISR(void)
 {
   
    ADC_Result = ADC10MEM;
-  Temperature = (ADC_Result * 0.33); // MSP430 referans gerilimi 2.5V olarak ayarlandi bu yüzden (2.5/1024)/0.01mV islemini yaptigimizda olusan sonuç budur.
+  Temperature = (ADC_Result * 0.33); // MSP430 referans gerilimi 3.3 olarak ayarlandi bu yüzden (2.5/1024)/0.01mV islemini yaptigimizda olusan sonuç budur.
 
    ADC10CTL0_bit.ADC10IFG = 0;
    ADC10CTL0 |= ADC10SC + ENC;
@@ -118,8 +92,4 @@ __interrupt void ADC_ISR(void)
 
    colour_table();
    RGB_LED( tR, tG, tB);
-  
-  
-   //for(;;);
-   
-}
+   }
